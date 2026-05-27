@@ -44,10 +44,10 @@
   body:not(.plan-mode) .day.combo-bottom { border-bottom: 0.5px solid #e5e7eb !important; }
   body:not(.plan-mode) .day.combo-left { border-left: 0.5px solid #e5e7eb !important; }
   body:not(.plan-mode) .day.combo-right { border-right: 0.5px solid #e5e7eb !important; }
-  body.dark:not(.plan-mode) .day.combo-top { border-top: 0.5px solid #333 !important; }
-  body.dark:not(.plan-mode) .day.combo-bottom { border-bottom: 0.5px solid #333 !important; }
-  body.dark:not(.plan-mode) .day.combo-left { border-left: 0.5px solid #333 !important; }
-  body.dark:not(.plan-mode) .day.combo-right { border-right: 0.5px solid #333 !important; }
+  body.dark:not(.plan-mode) .day.combo-top { border-top: 0.5px solid #555 !important; }
+  body.dark:not(.plan-mode) .day.combo-bottom { border-bottom: 0.5px solid #555 !important; }
+  body.dark:not(.plan-mode) .day.combo-left { border-left: 0.5px solid #555 !important; }
+  body.dark:not(.plan-mode) .day.combo-right { border-right: 0.5px solid #555 !important; }
   body:not(.plan-mode) .legend-plan { display: none; }
   @media print { 
     @page { size: A4; margin: 8mm; }
@@ -60,9 +60,22 @@
     .calendar-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .month { padding: 6px; border-radius: 4px; page-break-inside: avoid; border: 1px solid #999; }
     .month-header { font-size: 0.75rem; margin-bottom: 4px; }
+    .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); }
     .weekdays span { font-size: 0.5rem; }
-    .day { font-size: 0.7rem; border: 1px solid #000 !important; border-radius: 0 !important; }
-    .day.empty { border-color: transparent !important; }
+    .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-top: 1px solid #000; border-left: 1px solid #000; }
+    .day { font-size: 0.7rem; border: none !important; border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important; border-radius: 0 !important; outline: none !important; box-shadow: none !important; margin: 0; animation: none !important; aspect-ratio: 1; }
+    .day.empty { border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important; }
+    body.dark .day { border-color: #000 !important; }
+    body.dark .day.empty { border-color: #000 !important; }
+    body.dark .days { border-color: #000; }
+    .day.first-last, .day.today { border-radius: 0 !important; }
+    .day.combo-top, .day.combo-bottom, .day.combo-left, .day.combo-right,
+    body:not(.plan-mode) .day.combo-top, body:not(.plan-mode) .day.combo-bottom,
+    body:not(.plan-mode) .day.combo-left, body:not(.plan-mode) .day.combo-right,
+    body.dark:not(.plan-mode) .day.combo-top, body.dark:not(.plan-mode) .day.combo-bottom,
+    body.dark:not(.plan-mode) .day.combo-left, body.dark:not(.plan-mode) .day.combo-right {
+      border: none !important; border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important;
+    }
     .month-notes { margin-top: 4px; padding-top: 3px; }
     .month-notes li { font-size: 0.5rem; }
   }
@@ -79,7 +92,7 @@
   body.dark .month { background: #111; border-color: #333; }
   body.dark .month-header { color: #f8fafc; }
   body.dark .weekdays span { color: #777; }
-  body.dark .day { border-color: #333; }
+  body.dark .day { border-color: #555; }
   body.dark .day.empty { border-color: transparent; }
   body.dark .day.school { color: #e2e8f0; }
   body.dark .day.weekend { color: #555; }
