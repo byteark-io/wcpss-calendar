@@ -69,6 +69,11 @@
     body.dark .day.empty { border-color: #000 !important; }
     body.dark .days { border-color: #000; }
     .day.first-last, .day.today { border-radius: 0 !important; }
+    .day.h, .day.w, .day.v, .day.pull, .day.first-last, .day.today,
+    body.dark .day.h, body.dark .day.w, body.dark .day.v, body.dark .day.pull,
+    body.dark .day.first-last, body.dark .day.today {
+      border: none !important; border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important; border-radius: 0 !important;
+    }
     .day.combo-top, .day.combo-bottom, .day.combo-left, .day.combo-right,
     body:not(.plan-mode) .day.combo-top, body:not(.plan-mode) .day.combo-bottom,
     body:not(.plan-mode) .day.combo-left, body:not(.plan-mode) .day.combo-right,
@@ -139,7 +144,7 @@
 // CONFIGURATION - Change these for any school year
 // ============================================================
 const CONFIG = {
-  title: '2026-2027 School Calendar',
+  title: 'WCPSS Calendar (Traditional) 26-27',
   firstDay: '2026-08-24',
   lastDay: '2027-06-09',
 
