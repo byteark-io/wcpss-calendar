@@ -17,7 +17,7 @@
   .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 6px; }
   .weekdays span { font-size: 0.7rem; color: #6b7280; font-weight: 600; text-transform: uppercase; }
   .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; }
-  .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border-radius: 0; font-weight: 500; border: 0.5px solid #e5e7eb; }
+  .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 1.0rem; border-radius: 0; font-weight: 500; border: 0.5px solid #e5e7eb; }
   .day.empty { border-color: transparent; }
   .day[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: #1f2937; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; white-space: nowrap; z-index: 10; pointer-events: none; }
   .day { position: relative; }
@@ -36,9 +36,9 @@
   .day.combo-bottom { border-bottom: 2.5px solid #f59e0b !important; }
   .day.combo-left { border-left: 2.5px solid #f59e0b !important; }
   .day.combo-right { border-right: 2.5px solid #f59e0b !important; }
-  .month-notes { margin-top: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb; }
-  .month-notes li { font-size: 0.72rem; color: #4b5563; list-style: none; padding: 2px 0; display: flex; gap: 6px; }
-  .month-notes .dot { width: 8px; height: 8px; border-radius: 2px; margin-top: 3px; flex-shrink: 0; }
+  .month-notes { margin-top: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 2px 10px; }
+  .month-notes li { font-size: 0.72rem; color: #4b5563; list-style: none; padding: 1px 0; display: flex; align-items: center; gap: 4px; }
+  .month-notes .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
   body:not(.plan-mode) .day.pull { background: none; outline: none; color: #1f2937; font-weight: 500; }
   body:not(.plan-mode) .day.combo-top { border-top: 0.5px solid #e5e7eb !important; }
   body:not(.plan-mode) .day.combo-bottom { border-bottom: 0.5px solid #e5e7eb !important; }
@@ -49,11 +49,27 @@
   body.dark:not(.plan-mode) .day.combo-left { border-left: 0.5px solid #333 !important; }
   body.dark:not(.plan-mode) .day.combo-right { border-right: 0.5px solid #333 !important; }
   body:not(.plan-mode) .legend-plan { display: none; }
-  @media print { body { padding: 10px; } .calendar-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; } .month { page-break-inside: avoid; } }
+  @media print { 
+    @page { size: A4; margin: 8mm; }
+    body { padding: 0; background: #fff !important; color: #000 !important; }
+    h1 { font-size: 1.2rem; margin-bottom: 4px; }
+    #vpToggle, #themeToggle, #sizeToggle, #printBtn { display: none !important; }
+    .legend { margin-bottom: 8px; gap: 10px; }
+    .legend-item { font-size: 0.6rem; }
+    .legend-dot { width: 10px; height: 10px; }
+    .calendar-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .month { padding: 6px; border-radius: 4px; page-break-inside: avoid; border: 1px solid #999; }
+    .month-header { font-size: 0.75rem; margin-bottom: 4px; }
+    .weekdays span { font-size: 0.5rem; }
+    .day { font-size: 0.7rem; border: 1px solid #000 !important; border-radius: 0 !important; }
+    .day.empty { border-color: transparent !important; }
+    .month-notes { margin-top: 4px; padding-top: 3px; }
+    .month-notes li { font-size: 0.5rem; }
+  }
 </style>
 </head>
 <body>
-<h1><span id="title"></span> <span id="vpToggle" onclick="this.classList.toggle('on');document.body.classList.toggle('plan-mode',this.classList.contains('on'))" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">V</span> <span id="themeToggle" onclick="this.classList.toggle('on');document.body.classList.toggle('dark',this.classList.contains('on'))" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">☾</span></h1>
+<h1><span id="title"></span> <span id="vpToggle" onclick="this.classList.toggle('on');document.body.classList.toggle('plan-mode',this.classList.contains('on'))" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">V</span> <span id="themeToggle" onclick="this.classList.toggle('on');document.body.classList.toggle('dark',this.classList.contains('on'))" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">☾</span> <span id="sizeToggle" style="display:inline-flex;flex-direction:column;width:28px;height:28px;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;vertical-align:middle;overflow:hidden"><span onclick="adjustDaySize(1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.7rem;border-bottom:1px solid #d1d5db;line-height:1">+</span><span onclick="adjustDaySize(-1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.7rem;line-height:1">−</span></span> <span id="printBtn" onclick="window.print()" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">⎙</span></h1>
 <style>
   #vpToggle.on { background:#10b981; border-color:#10b981; color:#fff; }
   #themeToggle.on { background:#1e293b; border-color:#1e293b; color:#fbbf24; }
@@ -89,6 +105,9 @@
   body.dark .legend-item .legend-dot[style*="fef3c7"] { background: #78350f !important; border-color: #f59e0b !important; }
   body.dark #vpToggle { border-color: #555; color: #999; }
   body.dark #themeToggle { border-color: #555; }
+  body.dark #sizeToggle { border-color: #555; color: #999; }
+  body.dark #sizeToggle span { border-color: #555; }
+  body.dark #printBtn { border-color: #555; color: #999; }
 </style>
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#fff;border:3px solid #10b981;border-radius:50%"></div>Today</div>
@@ -353,6 +372,14 @@ months.forEach(([year, month]) => {
   div.innerHTML = html;
   grid.appendChild(div);
 });
+
+// Day font size adjustment
+let daySizeLevel = 1;
+const daySizes = [0.8, 1.0, 1.3, 1.6, 2.0];
+function adjustDaySize(dir) {
+  daySizeLevel = Math.max(0, Math.min(daySizes.length - 1, daySizeLevel + dir));
+  document.querySelectorAll('.day:not(.empty)').forEach(el => el.style.fontSize = daySizes[daySizeLevel] + 'rem');
+}
 
 // Apply combo border edges
 document.querySelectorAll('.month').forEach((monthEl, idx) => {
