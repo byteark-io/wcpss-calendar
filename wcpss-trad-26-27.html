@@ -427,6 +427,10 @@ document.querySelectorAll('.month').forEach((monthEl, idx) => {
     });
   });
 });
+
+// Auto-scroll to today's month
+const todayEl = document.querySelector('.day.today');
+if (todayEl) todayEl.closest('.month').scrollIntoView({behavior:'smooth',block:'center'});
 </script>
 </body>
 </html>
