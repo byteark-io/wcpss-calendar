@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCPSS Traditional 25-26</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fff; min-height: 100vh; padding: 40px 20px; color: #1a1a2e; }
+  h1 { text-align: center; font-size: 2.2rem; margin-bottom: 8px; color: #1f2937; }
+  .legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #374151; }
+  .legend-dot { width: 16px; height: 16px; border-radius: 4px; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+  .month { background: #f9fafb; border-radius: 12px; padding: 16px; border: 1px solid #e5e7eb; }
+  .month-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; color: #1f2937; text-align: center; }
+  .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 6px; }
+  .weekdays span { font-size: 0.7rem; color: #6b7280; font-weight: 600; text-transform: uppercase; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; }
+  .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 1.0rem; border-radius: 0; font-weight: 500; border: 0.5px solid #e5e7eb; }
+  .day.empty { border-color: transparent; }
+  .day[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: #1f2937; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; white-space: nowrap; z-index: 10; pointer-events: none; }
+  .day { position: relative; }
+  .day.school { color: #1f2937; }
+  .day.h { background: #fecaca; color: #991b1b; font-weight: 700; }
+  .day.w { background: #e0e7ff; color: #3730a3; font-weight: 700; }
+  .day.v { background: #d1fae5; color: #065f46; font-weight: 700; }
+  .day.first-last { background: #fff; color: #1f2937; font-weight: 800; border: 3px solid #f59e0b; border-radius: 50%; }
+  .day.today { background: #fff; color: #1f2937; font-weight: 800; border: 3px solid #10b981; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0); } }
+  .day.weekend { color: #9ca3af; }
+  .day.no-school { color: #d1d5db; }
+  .day.pull { background: #fef3c7; color: #b45309; font-weight: 700; outline: 2px dashed #f59e0b; outline-offset: -2px; }
+  .day.combo { position: relative; z-index: 1; }
+  .day.combo-top { border-top: 2.5px solid #f59e0b !important; }
+  .day.combo-bottom { border-bottom: 2.5px solid #f59e0b !important; }
+  .day.combo-left { border-left: 2.5px solid #f59e0b !important; }
+  .day.combo-right { border-right: 2.5px solid #f59e0b !important; }
+  .month-notes { margin-top: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 2px 10px; }
+  .month-notes li { font-size: 0.72rem; color: #4b5563; list-style: none; padding: 1px 0; display: flex; align-items: center; gap: 4px; }
+  .month-notes .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  body:not(.plan-mode) .day.pull { background: none; outline: none; color: #1f2937; font-weight: 500; }
+  body:not(.plan-mode) .day.combo-top { border-top: 0.5px solid #e5e7eb !important; }
+  body:not(.plan-mode) .day.combo-bottom { border-bottom: 0.5px solid #e5e7eb !important; }
+  body:not(.plan-mode) .day.combo-left { border-left: 0.5px solid #e5e7eb !important; }
+  body:not(.plan-mode) .day.combo-right { border-right: 0.5px solid #e5e7eb !important; }
+  body.dark:not(.plan-mode) .day.combo-top { border-top: 0.5px solid #555 !important; }
+  body.dark:not(.plan-mode) .day.combo-bottom { border-bottom: 0.5px solid #555 !important; }
+  body.dark:not(.plan-mode) .day.combo-left { border-left: 0.5px solid #555 !important; }
+  body.dark:not(.plan-mode) .day.combo-right { border-right: 0.5px solid #555 !important; }
+  body:not(.plan-mode) .legend-plan { display: none; }
+  @media print { 
+    @page { size: A4; margin: 8mm; }
+    body { padding: 0; background: #fff !important; color: #000 !important; }
+    h1 { font-size: 1.2rem; margin-bottom: 4px; }
+    #vpToggle, #themeToggle, #sizeToggle, #printBtn { display: none !important; }
+    .legend { margin-bottom: 8px; gap: 10px; }
+    .legend-item { font-size: 0.6rem; }
+    .legend-dot { width: 10px; height: 10px; }
+    .calendar-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .month { padding: 6px; border-radius: 4px; page-break-inside: avoid; border: 1px solid #999; }
+    .month-header { font-size: 0.75rem; margin-bottom: 4px; }
+    .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .weekdays span { font-size: 0.5rem; }
+    .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-top: 1px solid #000; border-left: 1px solid #000; }
+    .day { font-size: 0.7rem; border: none !important; border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important; border-radius: 0 !important; outline: none !important; box-shadow: none !important; margin: 0; animation: none !important; aspect-ratio: 1; }
+    .day.empty { border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important; }
+    body.dark .day { border-color: #000 !important; }
+    body.dark .day.empty { border-color: #000 !important; }
+    body.dark .days { border-color: #000; }
+    .day.first-last, .day.today { border-radius: 0 !important; }
+    .day.h, .day.w, .day.v, .day.pull, .day.first-last, .day.today,
+    body.dark .day.h, body.dark .day.w, body.dark .day.v, body.dark .day.pull,
+    body.dark .day.first-last, body.dark .day.today {
+      border: none !important; border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important; border-radius: 0 !important;
+    }
+    .day.combo-top, .day.combo-bottom, .day.combo-left, .day.combo-right,
+    body:not(.plan-mode) .day.combo-top, body:not(.plan-mode) .day.combo-bottom,
+    body:not(.plan-mode) .day.combo-left, body:not(.plan-mode) .day.combo-right,
+    body.dark:not(.plan-mode) .day.combo-top, body.dark:not(.plan-mode) .day.combo-bottom,
+    body.dark:not(.plan-mode) .day.combo-left, body.dark:not(.plan-mode) .day.combo-right {
+      border: none !important; border-right: 1px solid #000 !important; border-bottom: 1px solid #000 !important;
+    }
+    .month-notes { margin-top: 4px; padding-top: 3px; }
+    .month-notes li { font-size: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<h1><span id="title"></span> <span id="vpToggle" onclick="this.classList.toggle('on');document.body.classList.toggle('plan-mode',this.classList.contains('on'))" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">V</span> <span id="themeToggle" onclick="this.classList.toggle('on');document.body.classList.toggle('dark',this.classList.contains('on'))" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">☾</span> <span id="sizeToggle" style="display:inline-flex;flex-direction:column;width:28px;height:28px;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;vertical-align:middle;overflow:hidden"><span onclick="adjustDaySize(1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.7rem;border-bottom:1px solid #d1d5db;line-height:1">+</span><span onclick="adjustDaySize(-1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.7rem;line-height:1">−</span></span> <span id="printBtn" onclick="window.print()" style="display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;font-weight:800;font-size:0.8rem;border:2px solid #d1d5db;border-radius:4px;cursor:pointer;user-select:none;color:#6b7280;transition:all 0.2s;vertical-align:middle">⎙</span></h1>
+<style>
+  #vpToggle.on { background:#10b981; border-color:#10b981; color:#fff; }
+  #themeToggle.on { background:#1e293b; border-color:#1e293b; color:#fbbf24; }
+  body.dark { background: #000; color: #f1f5f9; }
+  body.dark h1 { color: #f1f5f9; }
+  body.dark .legend-item { color: #cbd5e1; }
+  body.dark .month { background: #111; border-color: #333; }
+  body.dark .month-header { color: #f8fafc; }
+  body.dark .weekdays span { color: #777; }
+  body.dark .day { border-color: #555; }
+  body.dark .day.empty { border-color: transparent; }
+  body.dark .day.school { color: #e2e8f0; }
+  body.dark .day.weekend { color: #555; }
+  body.dark .day.no-school { color: #333; }
+  body.dark .day.h { background: #be123c; color: #fff; }
+  body.dark .day.w { background: #4f46e5; color: #fff; }
+  body.dark .day.v { background: #059669; color: #fff; }
+  body.dark .day.first-last { background: #111; color: #f8fafc; border-color: #fbbf24; }
+  body.dark .day.today { background: #111; color: #f8fafc; border-color: #34d399; }
+  body.dark .day.pull { background: #78350f; color: #fde68a; }
+  body.dark:not(.plan-mode) .day.pull { background: none; color: #e2e8f0; font-weight: 500; }
+  body.dark .month-notes { border-color: #333; }
+  body.dark .month-notes li { color: #aaa; }
+  body.dark .month-notes .dot { opacity: 0.9; }
+  body.dark .month-notes .dot[style*="fecaca"] { background: #be123c !important; }
+  body.dark .month-notes .dot[style*="e0e7ff"] { background: #4f46e5 !important; }
+  body.dark .month-notes .dot[style*="d1fae5"] { background: #059669 !important; }
+  body.dark .month-notes .dot[style*="f59e0b"] { background: #fbbf24 !important; }
+  body.dark .day[data-tip]:hover::after { background: #fff; color: #000; }
+  body.dark .legend-item .legend-dot[style*="fecaca"] { background: #be123c !important; }
+  body.dark .legend-item .legend-dot[style*="e0e7ff"] { background: #4f46e5 !important; }
+  body.dark .legend-item .legend-dot[style*="d1fae5"] { background: #059669 !important; }
+  body.dark .legend-item .legend-dot[style*="fef3c7"] { background: #78350f !important; border-color: #f59e0b !important; }
+  body.dark #vpToggle { border-color: #555; color: #999; }
+  body.dark #themeToggle { border-color: #555; }
+  body.dark #sizeToggle { border-color: #555; color: #999; }
+  body.dark #sizeToggle span { border-color: #555; }
+  body.dark #printBtn { border-color: #555; color: #999; }
+</style>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#fff;border:3px solid #10b981;border-radius:50%"></div>Today</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fff;border:3px solid #f59e0b;border-radius:50%"></div>First / Last Day</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fecaca"></div>Holiday</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e0e7ff"></div>Teacher Workday</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d1fae5"></div>Vacation</div>
+  <div class="legend-item legend-plan"><div class="legend-dot" style="background:#fef3c7;border:2px dashed #f59e0b"></div>Pull Day</div>
+  <div class="legend-item legend-plan"><div class="legend-dot" style="box-shadow:none;border:2.5px solid #f59e0b"></div>Vacation Block</div>
+</div>
+
+<div class="calendar-grid" id="calendar"></div>
+
+<script>
+// ============================================================
+// CONFIGURATION - Change these for any school year
+// ============================================================
+const CONFIG = {
+  title: 'WCPSS Calendar (Traditional) 25-26',
+  firstDay: '2025-08-25',
+  lastDay: '2026-06-11',
+
+  // Holidays (H) - MM/DD format, year auto-resolved from session
+  holidays: {
+    '09/01': 'Labor Day',
+    '11/11': 'Veterans Day',
+    '01/19': 'MLK Day',
+    '04/03': 'Holiday',
+    '05/25': 'Memorial Day'
+  },
+
+  // Teacher Workdays (W)
+  workdays: {
+    '08/19': 'Workday',
+    '08/20': 'Workday',
+    '08/21': 'Workday',
+    '08/22': 'Workday',
+    '09/23': 'Workday',
+    '10/13': 'Workday',
+    '10/20': 'Workday',
+    '11/04': 'Workday',
+    '01/02': 'Workday',
+    '01/26': 'Workday',
+    '02/16': 'Workday',
+    '03/03': 'Workday',
+    '03/20': 'Workday',
+    '04/06': 'Workday',
+    '05/01': 'Workday',
+    '06/12': 'Workday',
+    '06/15': 'Workday'
+  },
+
+  // Vacation Days (V)
+  vacations: {
+    '11/26': 'Thanksgiving Break',
+    '11/27': 'Thanksgiving Break',
+    '11/28': 'Thanksgiving Break',
+    '12/22': 'Winter Break',
+    '12/23': 'Winter Break',
+    '12/24': 'Winter Break',
+    '12/25': 'Winter Break',
+    '12/26': 'Winter Break',
+    '12/29': 'Winter Break',
+    '12/30': 'Winter Break',
+    '12/31': 'Winter Break',
+    '01/01': 'Winter Break',
+    '03/30': 'Spring Break',
+    '03/31': 'Spring Break',
+    '04/01': 'Spring Break',
+    '04/02': 'Spring Break'
+  }
+};
+// ============================================================
+
+// Resolve MM/DD to full YYYY-MM-DD based on session year
+function resolveDate(mmdd) {
+  const [m, d] = mmdd.split('/');
+  const startYear = parseInt(CONFIG.firstDay.substring(0, 4));
+  const startMonth = parseInt(CONFIG.firstDay.substring(5, 7));
+  const month = parseInt(m);
+  const year = month >= startMonth ? startYear : startYear + 1;
+  return `${year}-${m}-${d}`;
+}
+
+// Build daysOff map
+const daysOff = {};
+Object.entries(CONFIG.holidays).forEach(([k, v]) => { daysOff[resolveDate(k)] = ['h', v]; });
+Object.entries(CONFIG.workdays).forEach(([k, v]) => { daysOff[resolveDate(k)] = ['w', v]; });
+Object.entries(CONFIG.vacations).forEach(([k, v]) => { daysOff[resolveDate(k)] = ['v', v]; });
+
+const firstDay = CONFIG.firstDay;
+const lastDay = CONFIG.lastDay;
+
+// Build set of all off days (including weekends)
+function addDays(ds, n) {
+  const d = new Date(ds + 'T12:00:00');
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function getDow(ds) { return new Date(ds + 'T12:00:00').getDay(); }
+function pad(n) { return n.toString().padStart(2, '0'); }
+function dateStr(y, m, d) { return `${y}-${pad(m+1)}-${pad(d)}`; }
+
+function isOff(ds) {
+  const dow = getDow(ds);
+  return dow === 0 || dow === 6 || !!daysOff[ds];
+}
+
+// Auto-generate pull days and combo blocks
+// Logic: For each off-day block (consecutive off days), check if
+// adjacent Mon/Tue (after) or Thu/Fri (before) are school days.
+// If pulling 1-2 days creates a block of 4+, mark them.
+function generateCombos() {
+  const pullDays = new Set();
+  const comboRanges = [];
+
+  // Find all off-day clusters within the session
+  const allDates = [];
+  let cur = firstDay;
+  while (cur <= lastDay) { allDates.push(cur); cur = addDays(cur, 1); }
+
+  // Find clusters of consecutive off days
+  const clusters = [];
+  let cluster = [];
+  allDates.forEach(ds => {
+    if (isOff(ds)) {
+      cluster.push(ds);
+    } else {
+      if (cluster.length) { clusters.push([...cluster]); cluster = []; }
+    }
+  });
+  if (cluster.length) clusters.push(cluster);
+
+  clusters.forEach(cl => {
+    // Skip clusters that are only weekends (no scheduled H/W/V)
+    if (!cl.some(ds => !!daysOff[ds])) return;
+
+    const before = addDays(cl[0], -1);
+    const before2 = addDays(cl[0], -2);
+    const after = addDays(cl[cl.length - 1], 1);
+    const after2 = addDays(cl[cl.length - 1], 2);
+
+    let blockStart = cl[0];
+    let blockEnd = cl[cl.length - 1];
+    let pulls = [];
+
+    // Before the cluster: pull Friday; pull Thursday only if Friday is a scheduled off day
+    if (before >= firstDay && before <= lastDay && !isOff(before) && getDow(before) === 5) {
+      pulls.push(before); blockStart = before;
+      if (before2 >= firstDay && before2 <= lastDay && !isOff(before2) && getDow(before2) === 4 && daysOff[before]) {
+        pulls.push(before2); blockStart = before2;
+      }
+    } else if (before >= firstDay && before <= lastDay && !isOff(before) && getDow(before) === 4 && daysOff[addDays(before, 1)]) {
+      pulls.push(before); blockStart = before;
+    }
+
+    // After the cluster: pull Monday; pull Tuesday only if Monday is a scheduled off day
+    if (after >= firstDay && after <= lastDay && !isOff(after) && getDow(after) === 1) {
+      pulls.push(after); blockEnd = after;
+      if (after2 >= firstDay && after2 <= lastDay && !isOff(after2) && getDow(after2) === 2 && daysOff[after]) {
+        pulls.push(after2); blockEnd = after2;
+      }
+    } else if (after >= firstDay && after <= lastDay && !isOff(after) && getDow(after) === 2 && daysOff[addDays(after, -1)]) {
+      pulls.push(after); blockEnd = after;
+    }
+
+    // Only create combo if we have pull days and total block is 4+ days
+    if (pulls.length > 0) {
+      // Count total days in block
+      let total = 0; let d = blockStart;
+      while (d <= blockEnd) { total++; d = addDays(d, 1); }
+      if (total >= 4) {
+        pulls.forEach(p => pullDays.add(p));
+        comboRanges.push([blockStart, blockEnd]);
+      }
+    }
+  });
+
+  return { pullDays, comboRanges };
+}
+
+const { pullDays, comboRanges } = generateCombos();
+
+function inCombo(ds) { return comboRanges.some(([s, e]) => ds >= s && ds <= e); }
+
+// Render
+document.getElementById('title').textContent = CONFIG.title;
+// Apply system theme preference
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  document.body.classList.add('dark');
+  document.getElementById('themeToggle').classList.add('on');
+}
+const today = new Date();
+const todayStr = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+const startYear = parseInt(firstDay.substring(0, 4));
+const startMonth = parseInt(firstDay.substring(5, 7)) - 1;
+const endYear = parseInt(lastDay.substring(0, 4));
+const endMonth = parseInt(lastDay.substring(5, 7)) - 1;
+
+const months = [];
+let y = startYear, m = startMonth;
+while (y < endYear || (y === endYear && m <= endMonth)) {
+  months.push([y, m]);
+  m++; if (m > 11) { m = 0; y++; }
+}
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const dotColors = { h: '#fecaca', w: '#e0e7ff', v: '#d1fae5' };
+const grid = document.getElementById('calendar');
+
+months.forEach(([year, month]) => {
+  const div = document.createElement('div');
+  div.className = 'month';
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const startDow = new Date(year, month, 1).getDay();
+  const notes = [];
+
+  let html = `<div class="month-header">${monthNames[month]} ${year}</div>`;
+  html += `<div class="weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>`;
+  html += `<div class="days">`;
+
+  for (let i = 0; i < startDow; i++) html += `<div class="day empty"></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = dateStr(year, month, d);
+    const dow = new Date(year, month, d).getDay();
+    let cls = 'day';
+
+    if (ds === firstDay || ds === lastDay) {
+      cls += ' first-last';
+      notes.push({ start: d, end: d, label: ds === firstDay ? 'First Day of School' : 'Last Day of School', color: '#f59e0b' });
+    } else if (ds === todayStr) {
+      cls += ' today';
+    } else if (pullDays.has(ds)) {
+      cls += ' pull';
+    } else if (daysOff[ds]) {
+      const [type, label] = daysOff[ds];
+      cls += ' ' + type;
+      const last = notes[notes.length - 1];
+      if (last && last.label === label) last.end = d;
+      else notes.push({ start: d, end: d, label, color: dotColors[type] });
+    } else if (dow === 0 || dow === 6) cls += ' weekend';
+    else if (ds < firstDay || ds > lastDay) cls += ' no-school';
+    else cls += ' school';
+
+    if (inCombo(ds)) cls += ' combo';
+    let tip = '';
+    const daysFromNow = Math.round((new Date(ds + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / 86400000);
+    const daysLabel = daysFromNow === 0 ? 'Today' : daysFromNow > 0 ? `${daysFromNow}d away` : `${-daysFromNow}d ago`;
+    if (ds === firstDay) tip = `First Day of School - ${daysLabel}`;
+    else if (ds === lastDay) tip = `Last Day of School - ${daysLabel}`;
+    else if (ds === todayStr) tip = 'Today';
+    else if (pullDays.has(ds)) tip = `Pull Day - ${daysLabel}`;
+    else if (daysOff[ds]) tip = `${daysOff[ds][1]} - ${daysLabel}`;
+    else tip = daysLabel;
+    html += `<div class="${cls}"${tip ? ` data-tip="${tip}"` : ''}>${d}</div>`;
+  }
+  html += `</div>`;
+
+  if (notes.length) {
+    html += `<ul class="month-notes">`;
+    notes.forEach(({start, end, label, color}) => {
+      const range = start === end ? `${start}` : `${start}-${end}`;
+      html += `<li><div class="dot" style="background:${color}"></div>${range}: ${label}</li>`;
+    });
+    html += `</ul>`;
+  }
+
+  div.innerHTML = html;
+  grid.appendChild(div);
+});
+
+// Day font size adjustment
+let daySizeLevel = 1;
+const daySizes = [0.8, 1.0, 1.3, 1.6, 2.0];
+function adjustDaySize(dir) {
+  daySizeLevel = Math.max(0, Math.min(daySizes.length - 1, daySizeLevel + dir));
+  document.querySelectorAll('.day:not(.empty)').forEach(el => el.style.fontSize = daySizes[daySizeLevel] + 'rem');
+}
+
+// Apply combo border edges
+document.querySelectorAll('.month').forEach((monthEl, idx) => {
+  const [year, month] = months[idx];
+  const startDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  comboRanges.forEach(([s, e]) => {
+    const comboDays = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = dateStr(year, month, d);
+      if (ds >= s && ds <= e) comboDays.push(d);
+    }
+    if (!comboDays.length) return;
+
+    const comboSet = new Set(comboDays);
+    comboDays.forEach(d => {
+      const cellIdx = startDow + d - 1;
+      const col = cellIdx % 7;
+      const cell = monthEl.querySelectorAll('.day')[cellIdx];
+      if (!cell) return;
+
+      if (!comboSet.has(d - 7)) cell.classList.add('combo-top');
+      if (!comboSet.has(d + 7)) cell.classList.add('combo-bottom');
+      if (col === 0 || !comboSet.has(d - 1)) cell.classList.add('combo-left');
+      if (col === 6 || !comboSet.has(d + 1)) cell.classList.add('combo-right');
+    });
+  });
+});
+</script>
+</body>
+</html>
