@@ -1,6 +1,6 @@
-# School Calendar Generator
+# WCPSS School Calendar Generator
 
-A single-file HTML school calendar with built-in vacation planning intelligence.
+Single-file HTML school calendars for Wake County Public School System (Traditional) with built-in vacation planning intelligence.
 
 ## Features
 
@@ -12,11 +12,10 @@ A single-file HTML school calendar with built-in vacation planning intelligence.
   - **Green** — Vacation Days
   - **Orange circle** — First/Last Day of School
   - **Green pulsing circle** — Today's date
-- Thin grid lines for readability
-- Month descriptions below each month showing grouped date ranges
+- Auto-scrolls to current month on load
+- Month descriptions below each month (inline flex layout)
 
 ### Vacation Planning Mode (V toggle)
-- Click the **V** button next to the title to enable
 - Auto-detects strategic "pull days" — school days worth skipping to create long weekends/breaks
 - Logic:
   - **Friday** before a holiday cluster → pull (weekend bridges to off days)
@@ -26,57 +25,48 @@ A single-file HTML school calendar with built-in vacation planning intelligence.
   - Only creates blocks of 4+ total days
   - Plain weekends alone don't trigger pull suggestions
 - Pull days shown with dashed orange outline
-- Full vacation blocks outlined with thick orange border (Excel-style grouped selection)
+- Full vacation blocks outlined with thick orange border
+
+### Font Size (+/− toggle)
+- Stacked +/− button to increase/decrease day number font size
+- 5 levels: 0.8rem → 1.0rem (default) → 1.3rem → 1.6rem → 2.0rem
 
 ### Dark/Light Theme (☾ toggle)
-- Click the **☾** button to toggle themes
 - Auto-detects system/browser preference on load
-- Light theme: white background, pastel day colors (printer-friendly)
+- Light theme: white background, pastel day colors
 - Dark theme: black background, vibrant day colors, high contrast
+
+### Print Support (⎙ button)
+- A4 page size with 8mm margins
+- 3-column layout, compact fonts
+- Uniform 1px black grid lines on all cells
+- Hides all toggle buttons in print
 
 ### Tooltips
 - Hover any day to see details
-- Shows description (Holiday name, Workday, Pull Day, etc.)
-- Shows number of days from today (e.g. "Labor Day - 103d away" or "5d ago")
-
-### Print Support
-- Light theme optimized for printing
-- 3-column layout in print mode
-- Months avoid page breaks
+- Shows description and days from today (e.g. "Labor Day - 103d away")
 
 ## Configuration
 
-Edit the `CONFIG` object at the top of the `<script>` section to use for any school year:
+Edit the `CONFIG` object at the top of the `<script>` section:
 
 ```javascript
 const CONFIG = {
-  title: '2027-2028 School Calendar',
+  title: 'WCPSS Calendar (Traditional) 27-28',
   firstDay: '2027-08-23',    // YYYY-MM-DD
   lastDay: '2028-06-08',     // YYYY-MM-DD
 
   // Use MM/DD format — year is auto-resolved from session dates
-  holidays: {
-    '09/06': 'Labor Day',
-    '11/25': 'Thanksgiving',
-    // ...
-  },
-  workdays: {
-    '09/20': 'Workday',
-    // ...
-  },
-  vacations: {
-    '12/23': 'Winter Break',
-    // ...
-  }
+  holidays: { '09/06': 'Labor Day', ... },
+  workdays: { '09/20': 'Workday', ... },
+  vacations: { '12/23': 'Winter Break', ... }
 };
 ```
 
-The calendar will:
-1. Auto-resolve MM/DD dates to the correct year based on session start
-2. Generate the correct month range
-3. Auto-calculate all pull days and vacation blocks
-4. Render everything — no manual pull day or combo range configuration needed
-
 ## Files
 
-- `school-calendar.html` — Self-contained single HTML file (no dependencies)
+- `wcpss-trad-25-26.html` — 2025-2026 Traditional Calendar
+- `wcpss-trad-26-27.html` — 2026-2027 Traditional Calendar
+- `wcpss-trad-27-28.html` — 2027-2028 Traditional Calendar
+
+Each file is self-contained (no dependencies).
